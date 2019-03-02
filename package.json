@@ -1,0 +1,32 @@
+{
+  "name": "auth-wizard",
+  "version": "1.0.0",
+  "description": "Nodejs implementation of basic authentication flow",
+  "main": "server.js",
+  "scripts": {
+    "start": "nodemon server.js",
+    "test": "mocha",
+    "lint:fix": "eslint api/** --fix",
+    "lint": "eslint api/**"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/oaks-view/AuthWizard.git"
+  },
+  "author": "oaks-view",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/oaks-view/AuthWizard/issues"
+  },
+  "homepage": "https://github.com/oaks-view/AuthWizard#readme",
+  "devDependencies": {
+    "eslint": "^5.15.0",
+    "eslint-config-standard": "^12.0.0",
+    "eslint-plugin-import": "^2.16.0",
+    "eslint-plugin-node": "^8.0.1",
+    "eslint-plugin-promise": "^4.0.1",
+    "eslint-plugin-standard": "^4.0.0",
+    "mocha": "^6.0.2",
+    "nodemon": "^1.18.10"
+  }
+}
