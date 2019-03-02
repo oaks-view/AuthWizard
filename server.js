@@ -6,7 +6,7 @@ const bodyParser = require('body-parser');
 const authRoute = require(`${appRoot}/api/routes/authRoute`);
 const logger = require(`${appRoot}/config/winston`);
 const swaggerUi = require('swagger-ui-express');
-
+require(`${appRoot}/config/dbConnection`);
 const router = express.Router();
 
 const app = express();
