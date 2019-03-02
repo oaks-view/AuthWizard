@@ -14,6 +14,7 @@ module.exports = {
         "ecmaVersion": 2018
     },
     "rules": {
-        "semi": [2, "always"]
+        "semi": [2, "always"],
+        "indent": ["error", 4]
     }
 };
