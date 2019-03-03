@@ -3,5 +3,5 @@ const authController = require(`${appRoot}/api/controllers/authController`);
 
 module.exports = (router) => {
     router.route('/signup')
-        .post(authController.signUp);
+        .post(authController.validateSignupParams, authController.signUp);
 };

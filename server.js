@@ -17,6 +17,12 @@ app.use(bodyParser.urlencoded({ extended: false }));
 // parse application/json
 app.use(bodyParser.json());
 
+// parse application/x-www-form-urlencoded
+app.use(bodyParser.urlencoded({ extended: false }));
+
+// parse application/json
+app.use(bodyParser.json());
+
 // configure swagger ui
 const swaggerDocument = require(`${appRoot}/doc/api-spec.json`);
 router.use('/', swaggerUi.serve);
