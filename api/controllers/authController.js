@@ -30,7 +30,7 @@ exports.signUp = async (req, res) => {
         const link = `${process.env.BASE_URL}/verify-email/${token}`;
         const template = TEMPLATES.VERIFY_EMAIL;
 
-        const templateVariables = { link, template, firstName };
+        const templateVariables = { link, firstName };
 
         emailHelper.sendMail(newUser.email, 'AuthWizard :: Welcome Aboard', template, templateVariables);
 
@@ -153,7 +153,7 @@ exports.verifyUserEmail = async (req, res) => {
         };
 
         logger.info(`Email verification successful. User email: ${dbUser.email}`);
-        return res.status(HTTP_STATUS.OK.CODE).render('emailVerificationFeedback', options);
+        return res.render('emailVerificationFeedback', options);
     } catch (err) {
         logger.error(`Email Verification failed. ErrMSG: ${err.message}`);
         return res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR.CODE).json({
