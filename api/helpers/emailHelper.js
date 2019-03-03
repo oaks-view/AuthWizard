@@ -12,7 +12,7 @@ dotenv.config();
  * @param {string} templateName name of html file
  * @param {object} templateVariables contains variables needed in email template as keys
  */
-function createEmailTemplate (templateName, templateVariables) {
+exports.createEmailTemplate = (templateName, templateVariables) => {
     let path = `${appRoot}/public/templates/${templateName}.html`;
     let html = fs.readFileSync(path, 'utf8');
 
@@ -49,7 +49,7 @@ exports.sendMail = (to, subject, templateName, templateVariables) => {
                 requireTLS: true
             });
 
-            const html = createEmailTemplate(templateName, templateVariables);
+            const html = this.createEmailTemplate(templateName, templateVariables);
             const mailOptions = {
                 from: '"AuthWizard" <auth@wizard.io>',
                 to,
