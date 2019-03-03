@@ -17,3 +17,9 @@ test-output/
 # Dependency directories
 node_modules/
 jspm_packages/
+
+#app and dev machine generated files
+myfile.bat
+myfile.json
+.DS_STORE
+.vscode/

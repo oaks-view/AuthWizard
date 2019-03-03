@@ -13,7 +13,8 @@
                 "MONGODB_URI": "mongodb://localhost:27017/auth-wizard",
                 "EMAIL_HOST": "mail.parallelscore.com",
                 "EMAIL_USER": "m.igbuku@parallelscore.com",
-                "EMAIL_PASS": "M@xearl9800"
+                "EMAIL_PASS": "M@xearl9800",
+                "BASE_URL": ""
             }
         }
     ]
