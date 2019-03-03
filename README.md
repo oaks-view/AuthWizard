@@ -5,12 +5,12 @@ carry out user authentication without leveraging out of the box authentication l
 
 ## Features
 * Signup - Basic user registration using email and password. Also includes relevant validations
-* Login - Login using email and password to receive [jsonwebtoken] (https://jwt.io/introduction/)
+* Login - Login using email and password to receive [jsonwebtoken](https://jwt.io/introduction/)
 
 ### Prerequisites
 To setup and run the project, an individual machine requires a working version of node and npm.
 This project was bootstraped using node --version v8.9.4 and npm 5.6.0. It is recommended to use at least this version of the node and npm dependencies. Here is a good tutorial on how to install nodejs
-using [nvm] (https://nodesource.com/blog/installing-node-js-tutorial-using-nvm-on-mac-os-x-and-ubuntu/).
+using [nvm](https://nodesource.com/blog/installing-node-js-tutorial-using-nvm-on-mac-os-x-and-ubuntu/).
 
 ## Install
 Assuming that the project is already cloned. Open a new terminal window and navigate into the project directory and into the root folder. Then
