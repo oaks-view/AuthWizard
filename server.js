@@ -23,6 +23,12 @@ app.use(bodyParser.urlencoded({ extended: false }));
 // parse application/json
 app.use(bodyParser.json());
 
+// views folder
+app.set('views', './public/view');
+
+// specify template engine
+app.set('view engine', 'pug');
+
 // configure swagger ui
 const swaggerDocument = require(`${appRoot}/doc/api-spec.json`);
 router.use('/', swaggerUi.serve);

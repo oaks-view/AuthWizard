@@ -116,15 +116,29 @@ exports.verifyUserEmail = async (req, res) => {
         if (!token) {
             message = `"token is required parameter"`;
             logger.error(`No token sent ${message}`);
+
+            const options = {
+                message: 'Email verification link is invalid or expired'
+            };
+            return res.render('emailVerificationFeedback', options);
         }
 
         const dbUser = await userService.getOne({ emailVerificationToken: token });
 
         if (!dbUser) {
-            message = `Email verification link is invalid or expired`;
-            logger.info(`User not found for token. ${token}`);
+            logger.error(`User not found for token. ${token}`);
 
-            return res.status(HTTP_STATUS.BAD_REQUEST.CODE).send(`<h2>${message}</h2>`);
+            const options = {
+                message: 'Email verification link is invalid or expired'
+            };
+            return res.render('emailVerificationFeedback', options);
+        }
+
+        if (dbUser.emailVerified === true) {
+            const options = {
+                message: `Hello ${dbUser.firstName}, your email has already been verified`
+            };
+            return res.render('emailVerificationFeedback', options);
         }
 
         await userService.update({ _id: dbUser._id }, {
@@ -134,10 +148,12 @@ exports.verifyUserEmail = async (req, res) => {
             }
         });
 
-        message = 'Email verification successful';
-        logger.info(`${message}. User email: ${dbUser.email}`);
+        const options = {
+            message: `Hello ${dbUser.firstName}, your email has been verified successfully!`
+        };
 
-        return res.status(HTTP_STATUS.OK.CODE).send(`<h2>${message}</h2>`);
+        logger.info(`Email verification successful. User email: ${dbUser.email}`);
+        return res.status(HTTP_STATUS.OK.CODE).render('emailVerificationFeedback', options);
     } catch (err) {
         logger.error(`Email Verification failed. ErrMSG: ${err.message}`);
         return res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR.CODE).json({
