@@ -422,4 +422,239 @@ describe('AuthController', () => {
         assert.calledWith(userService.getOne, { emailVerificationToken: req.params.token });
         assert.calledWith(resJson, { message: HTTP_STATUS.INTERNAL_SERVER_ERROR.MESSAGE });
     });
+
+    it('validateSignupParams returns status code 400 if email is missing', async () => {
+        const req = {
+            body: {
+                firstName: 'John',
+                lastName: 'Doe',
+                password: '123456'
+            }
+        };
+
+        const next = sandbox.spy();
+
+        await authController.validateSignupParams(req, res, next);
+
+        assert.notCalled(next);
+
+        assert.calledWith(res.status, HTTP_STATUS.BAD_REQUEST.CODE);
+        assert.calledWith(resJson, { message: 'email is required' });
+    });
+
+    it('validateSignupParams returns status code 400 if password is missing', async () => {
+        const req = {
+            body: {
+                email: 'john@email.com',
+                firstName: 'John',
+                lastName: 'Doe'
+            }
+        };
+
+        const next = sandbox.spy();
+
+        await authController.validateSignupParams(req, res, next);
+
+        assert.notCalled(next);
+
+        assert.calledWith(res.status, HTTP_STATUS.BAD_REQUEST.CODE);
+        assert.calledWith(resJson, { message: 'password is required' });
+    });
+
+    it('validateSignupParams returns status code 400 if firstName is missing', async () => {
+        const req = {
+            body: {
+                email: 'john@email.com',
+                lastName: 'Doe',
+                password: '1234455'
+            }
+        };
+
+        const next = sandbox.spy();
+
+        await authController.validateSignupParams(req, res, next);
+
+        assert.notCalled(next);
+
+        assert.calledWith(res.status, HTTP_STATUS.BAD_REQUEST.CODE);
+        assert.calledWith(resJson, { message: 'firstName is required' });
+    });
+
+    it('validateSignupParams returns status code 400 if lastName is missing', async () => {
+        const req = {
+            body: {
+                email: 'john@email.com',
+                firstName: 'John',
+                password: '1234455',
+                confirmPassword: '1234455'
+            }
+        };
+
+        const next = sandbox.spy();
+
+        await authController.validateSignupParams(req, res, next);
+
+        assert.notCalled(next);
+
+        assert.calledWith(res.status, HTTP_STATUS.BAD_REQUEST.CODE);
+        assert.calledWith(resJson, { message: 'lastName is required' });
+    });
+
+    it('validateSignupParams returns status code 400 if confirmPassword is missing', async () => {
+        const req = {
+            body: {
+                email: 'john@email.com',
+                firstName: 'John',
+                lastName: 'Doe',
+                password: '1234455'
+            }
+        };
+
+        const next = sandbox.spy();
+
+        await authController.validateSignupParams(req, res, next);
+
+        assert.notCalled(next);
+
+        assert.calledWith(res.status, HTTP_STATUS.BAD_REQUEST.CODE);
+        assert.calledWith(resJson, { message: 'confirmPassword is required' });
+    });
+
+    it('validateSignupParams returns status code 400 if email is invalid', async () => {
+        const req = {
+            body: {
+                email: 'invalid email',
+                firstName: 'John',
+                lastName: 'Doe',
+                password: '1234455',
+                confirmPassword: '1234455'
+            }
+        };
+
+        const next = sandbox.spy();
+
+        await authController.validateSignupParams(req, res, next);
+
+        assert.notCalled(next);
+
+        assert.calledWith(res.status, HTTP_STATUS.BAD_REQUEST.CODE);
+        assert.calledWith(resJson, { message: `${req.body.email} is not a valid email` });
+    });
+
+    it('validateSignupParams returns status code 409 if user already exists for email', async () => {
+        const req = {
+            body: {
+                email: 'john@email.com',
+                firstName: 'John',
+                lastName: 'Doe',
+                password: '1234455',
+                confirmPassword: '1234455'
+            }
+        };
+
+        const dbUser = {
+            _id: 'jdcnncdcsdjsskscksdcosdcskjks',
+            email: req.body.email
+        };
+
+        userService.getOne = sandbox.stub().resolves(dbUser);
+
+        const next = sandbox.spy();
+
+        await authController.validateSignupParams(req, res, next);
+
+        assert.notCalled(next);
+
+        assert.calledWith(res.status, HTTP_STATUS.CONFLICT.CODE);
+        assert.calledWith(resJson, { message: 'User with this email already exists' });
+        assert.calledWith(userService.getOne, { email: req.body.email });
+    });
+
+    it('validateSignupParams returns status code 400 if password and confirmPasword dont match', async () => {
+        const req = {
+            body: {
+                email: 'john@email.com',
+                firstName: 'John',
+                lastName: 'Doe',
+                password: '1234455',
+                confirmPassword: '123pass'
+            }
+        };
+
+        userService.getOne = sandbox.stub().resolves(null);
+        const next = sandbox.spy();
+
+        await authController.validateSignupParams(req, res, next);
+
+        assert.notCalled(next);
+        assert.calledWith(res.status, HTTP_STATUS.BAD_REQUEST.CODE);
+        assert.calledWith(resJson, { message: '"password" and "confirmPassword" must be equal' });
+        assert.calledWith(userService.getOne, { email: req.body.email });
+    });
+
+    it('validateSignupParams returns status code 400 if password length is less than 6', async () => {
+        const password = '12345';
+        const req = {
+            body: {
+                email: 'john@email.com',
+                firstName: 'John',
+                lastName: 'Doe',
+                password,
+                confirmPassword: password
+            }
+        };
+
+        userService.getOne = sandbox.stub().resolves(null);
+        const next = sandbox.spy();
+
+        await authController.validateSignupParams(req, res, next);
+
+        assert.notCalled(next);
+        assert.calledWith(res.status, HTTP_STATUS.BAD_REQUEST.CODE);
+        assert.calledWith(resJson, { message: 'password must be at least 6 characters' });
+        assert.calledWith(userService.getOne, { email: req.body.email });
+    });
+
+    it('validateSignupParams calls next if signup parameters are valid', async () => {
+        const password = '123456';
+        const req = {
+            body: {
+                email: 'john@email.com',
+                firstName: 'John',
+                lastName: 'Doe',
+                password,
+                confirmPassword: password
+            }
+        };
+
+        userService.getOne = sandbox.stub().resolves(null);
+        const next = sandbox.spy();
+
+        await authController.validateSignupParams(req, res, next);
+
+        assert.called(next);
+        assert.calledWith(userService.getOne, { email: req.body.email });
+    });
+
+    it('validateSignupParams returns status code 500 if server error occurs', async () => {
+        const password = '123456';
+        const req = {
+            body: {
+                email: 'john@email.com',
+                firstName: 'John',
+                lastName: 'Doe',
+                password,
+                confirmPassword: password
+            }
+        };
+
+        userService.getOne = sandbox.stub().rejects(new Error('Database error occured'));
+        const next = sandbox.spy();
+
+        await authController.validateSignupParams(req, res, next);
+
+        assert.calledWith(res.status, HTTP_STATUS.INTERNAL_SERVER_ERROR.CODE);
+        assert.calledWith(resJson, { message: HTTP_STATUS.INTERNAL_SERVER_ERROR.MESSAGE });
+        assert.calledWith(userService.getOne, { email: req.body.email });
+    });
 });
