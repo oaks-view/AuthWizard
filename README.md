@@ -13,6 +13,8 @@ This project was bootstraped using node --version v8.9.4 and npm 5.6.0. It is re
 using [nvm](https://nodesource.com/blog/installing-node-js-tutorial-using-nvm-on-mac-os-x-and-ubuntu/).
 
 ## Install
+To clone project execute the following command from terminal
+`git clone https://github.com/oaks-view/AuthWizard.git`
 Assuming that the project is already cloned. Open a new terminal window and navigate into the project directory and into the root folder. Then
 * Run the following command `npm install`
 * Next theres need to setup some environmental variables which are all listed in a `.env` file found
