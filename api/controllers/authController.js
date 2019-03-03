@@ -1,4 +1,5 @@
 const appRoot = require('app-root-path');
+const jwt = require('jsonwebtoken');
 const logger = require(`${appRoot}/config/winston`);
 const helperMethods = require(`${appRoot}/api/helpers/helperMethods`);
 const emailHelper = require(`${appRoot}/api/helpers/emailHelper`);
@@ -41,6 +42,65 @@ exports.signUp = async (req, res) => {
         });
     } catch (err) {
         logger.error(`User signup failed. ErrMSG: ${err.message}`);
+        return res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR.CODE).json({
+            message: HTTP_STATUS.INTERNAL_SERVER_ERROR.MESSAGE
+        });
+    }
+};
+
+exports.login = async (req, res) => {
+    try {
+        logger.info(`User login`);
+
+        const result = helperMethods.validateRequiredParams(req.body, ['email', 'password']);
+
+        if (result.missingParam) {
+            logger.error(result.message);
+
+            return res.status(HTTP_STATUS.BAD_REQUEST.CODE).json({
+                message: result.message
+            });
+        }
+
+        const { email } = req.body;
+
+        const dbUser = await userService.getOne({ email }, true);
+        if (!dbUser) {
+            const message = 'User login failed';
+            logger.error(`${message}. No user found for email: ${email}`);
+
+            return res.status(HTTP_STATUS.FORBIDDEN.CODE).json({
+                message: `${message}. Please check username and password`
+            });
+        }
+
+        const hash = helperMethods.hashPassword(dbUser.salt, req.body.password);
+
+        if (hash !== dbUser.hash) {
+            logger.error(`User authentication failed. Password mismatch for user ${dbUser._id}`);
+            return res.status(HTTP_STATUS.FORBIDDEN.CODE).json({
+                message: 'User login failed. Please check username and password.'
+            });
+        }
+
+        if (!dbUser.emailVerified) {
+            const message = 'Email is not verified';
+            logger.error(`User login failed. ${message}`);
+            return res.status(HTTP_STATUS.FORBIDDEN.CODE).json({
+                message: `User login failed. ${message}`
+            });
+        }
+
+        // generate jwt
+        const data = {
+            sub: dbUser._id.toString(),
+            email: dbUser.email
+        };
+        const token = jwt.sign(data, process.env.JWT_SECRET);
+
+        return res.status(HTTP_STATUS.OK.CODE).json({ token });
+    } catch (err) {
+        logger.error(`Login failed. ErrMSG: ${err.message}`);
         return res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR.CODE).json({
             message: HTTP_STATUS.INTERNAL_SERVER_ERROR.MESSAGE
         });

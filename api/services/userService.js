@@ -13,8 +13,8 @@ exports.create = (newUser) => {
  * @description fetch single user from database
  * @param {{}} query query object
  */
-exports.getOne = (query) => {
-    return User.findOne(query);
+exports.getOne = (query, selectHash = false) => {
+    return selectHash ? User.findOne(query).select('+hash +salt') : User.findOne(query);
 };
 
 /**

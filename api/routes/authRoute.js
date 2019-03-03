@@ -7,4 +7,7 @@ module.exports = (router) => {
 
     router.route('/verify-email/:token')
         .get(authController.verifyUserEmail);
+
+    router.route('/login')
+        .post(authController.login);
 };
