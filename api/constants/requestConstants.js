@@ -34,6 +34,10 @@ exports.HTTP_STATUS = {
     UNPROCESSABLE_ENTITY: {
         CODE: 422,
         MESSAGE: 'Request contains some semantic errors'
+    },
+    CONFLICT: {
+        CODE: 409,
+        MESSAGE: 'Request could not be processed due to conflicts with existing resources'
     }
 };
 

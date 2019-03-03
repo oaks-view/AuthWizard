@@ -14,5 +14,223 @@
         "url": "http://staging-api.example.com",
         "description": "Url to heroku deployment"
       }
-    ]
+    ],
+    "paths": {
+        "/signup": {
+          "post": {
+            "tags": [
+              "Auth"
+            ],
+            "summary": "Signup by email",
+            "requestBody": {
+              "required": true,
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "minProperties": 5,
+                    "properties": {
+                      "email": {
+                        "type": "string",
+                        "description": "email address",
+                        "example": "john@example.com"
+                      },
+                      "firstName": {
+                        "type": "string",
+                        "description": "firstName",
+                        "example": "John"
+                      },
+                      "lastName": {
+                        "type": "string",
+                        "description": "lastName",
+                        "example": "Doe"
+                      },
+                      "password": {
+                        "type": "string",
+                        "description": "password"
+                      },
+                      "confirmPassword": {
+                        "type": "string",
+                        "description": "password"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "responses": {
+              "200": {
+                "description": "Signup was successful",
+                "content": {
+                  "application/json": {
+                    "schema": {
+                      "$ref": "#/components/schemas/ResponseMessage"
+                    }
+                  }
+                }
+              },
+              "400": {
+                "description": "Body missing required fields",
+                "content": {
+                  "application/json": {
+                    "schema": {
+                      "$ref": "#/components/schemas/ResponseMessage"
+                    }
+                  }
+                }
+              },
+              "409": {
+                "description": "User with email already exists",
+                "content": {
+                  "application/json": {
+                    "schema": {
+                      "$ref": "#/components/schemas/ResponseMessage"
+                    }
+                  }
+                }
+              },
+              "500": {
+                "description": "Internal server error",
+                "content": {
+                  "application/json": {
+                    "schema": {
+                      "$ref": "#/components/schemas/ResponseMessage"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "/verify-email/{token}": {
+          "get": {
+            "tags": [
+              "Auth"
+            ],
+            "summary": "Verify email",
+            "parameters": [
+              {
+                "in": "path",
+                "name": "token",
+                "schema": {
+                  "type": "string",
+                  "description": "email verification token"
+                },
+                "required": true,
+                "example": "djooiedoejiohejdjceijicnowjeoidncdwioneinwocnowoddjwsdh2oneeuiniddjdbejdnuijbweheni3i"
+              }
+            ],
+            "responses": {
+              "200": {
+                "description": "Email verification successful",
+                "content": {
+                  "text/html": {
+                    "schema": {
+                      "type": "string"
+                    }
+                  }
+                }
+              },
+              "400": {
+                "description": "Body missing required fields",
+                "content": {
+                  "text/html": {
+                    "schema": {
+                      "type": "string"
+                    }
+                  }
+                }
+              },
+              "500": {
+                "description": "Internal server error",
+                "content": {
+                  "application/json": {
+                    "schema": {
+                      "$ref": "#/components/schemas/ResponseMessage"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "/login": {
+          "post": {
+            "tags": [
+              "Auth"
+            ],
+            "summary": "User signin with email and password.",
+            "description": "User signs in with email and password, and get back a jsonwebtoken",
+            "requestBody": {
+              "required": true,
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "email": {
+                        "type": "string"
+                      },
+                      "password": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "responses": {
+              "200": {
+                "description": "login successful",
+                "content": {
+                  "application/json": {
+                    "schema": {
+                      "type": "object",
+                      "properties": {
+                        "token": {
+                          "type": "string",
+                          "description": "jsonwebtoken, to be sent with every request to an authenticated endpoint"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "400": {
+                "description": "Body missing required fields",
+                "content": {
+                  "application/json": {
+                    "schema": {
+                      "$ref": "#/components/schemas/ResponseMessage"
+                    }
+                  }
+                }
+              },
+              "500": {
+                "description": "Internal server error",
+                "content": {
+                  "application/json": {
+                    "schema": {
+                      "$ref": "#/components/schemas/ResponseMessage"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+        "components": {
+    "schemas": {
+      "ResponseMessage": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "custom message from server"
+          }
+        }
+      }
+    }
+  }
   }
