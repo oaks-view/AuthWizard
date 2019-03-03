@@ -15,7 +15,7 @@ exports.HTTP_STATUS = {
         CODE: 403,
         MESSAGE: 'The authentication failed.'
     },
-    NOTFOUND: {
+    NOT_FOUND: {
         CODE: 404,
         MESSAGE: 'The requested resource not found.'
     },

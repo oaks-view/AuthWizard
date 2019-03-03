@@ -10,7 +10,10 @@
             "name": "Start API",
             "program": "${workspaceFolder}/server.js",
             "env": {
-                "MONGODB_URI": "mongodb://localhost:27017/auth-wizard"
+                "MONGODB_URI": "mongodb://localhost:27017/auth-wizard",
+                "EMAIL_HOST": "mail.parallelscore.com",
+                "EMAIL_USER": "m.igbuku@parallelscore.com",
+                "EMAIL_PASS": "M@xearl9800"
             }
         }
     ]

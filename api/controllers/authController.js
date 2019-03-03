@@ -8,6 +8,7 @@ const { HTTP_STATUS, TEMPLATES } = require(`${appRoot}/api/constants/requestCons
 exports.signUp = async (req, res) => {
     try {
         const { email, firstName, lastName, password } = req.body;
+        logger.info('User signup');
         let message;
 
         const user = {
@@ -25,7 +26,7 @@ exports.signUp = async (req, res) => {
 
         const newUser = await userService.create(user);
 
-        const link = `${process.env.BASE_URL}/user/verify/${token}`;
+        const link = `${process.env.BASE_URL}/verify-email/${token}`;
         const template = TEMPLATES.VERIFY_EMAIL;
 
         const templateVariables = { link, template, firstName };
@@ -38,10 +39,50 @@ exports.signUp = async (req, res) => {
         return res.status(HTTP_STATUS.OK.CODE).json({
             message
         });
-
-        // create password
     } catch (err) {
         logger.error(`User signup failed. ErrMSG: ${err.message}`);
+        return res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR.CODE).json({
+            message: HTTP_STATUS.INTERNAL_SERVER_ERROR.MESSAGE
+        });
+    }
+};
+
+exports.verifyUserEmail = async (req, res) => {
+    try {
+        logger.info(`Verify user email`);
+        const { token } = req.params;
+        let message;
+
+        if (!token) {
+            message = `"token is required parameter"`;
+            logger.error(`No token sent ${message}`);
+        }
+
+        const dbUser = await userService.getOne({ emailVerificationToken: token });
+
+        if (!dbUser) {
+            message = `Token is invalid`;
+            logger.info(`User not found for token. ${token}`);
+
+            return res.status(HTTP_STATUS.BAD_REQUEST.CODE).json({
+                message
+            });
+        }
+
+        await userService.update({ _id: dbUser._id }, {
+            emailVerified: true,
+            $unset: {
+                emailVerificationToken: undefined
+            }
+        });
+
+        message = 'Email verification successful';
+        logger.info(`${message}. User email: ${dbUser.email}`);
+        return res.status(HTTP_STATUS.OK.CODE).json({
+            message
+        });
+    } catch (err) {
+        logger.error(`Email Verification failed. ErrMSG: ${err.message}`);
         return res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR.CODE).json({
             message: HTTP_STATUS.INTERNAL_SERVER_ERROR.MESSAGE
         });
