@@ -121,12 +121,10 @@ exports.verifyUserEmail = async (req, res) => {
         const dbUser = await userService.getOne({ emailVerificationToken: token });
 
         if (!dbUser) {
-            message = `Token is invalid`;
+            message = `Email verification link is invalid or expired`;
             logger.info(`User not found for token. ${token}`);
 
-            return res.status(HTTP_STATUS.BAD_REQUEST.CODE).json({
-                message
-            });
+            return res.status(HTTP_STATUS.BAD_REQUEST.CODE).send(`<h2>${message}</h2>`);
         }
 
         await userService.update({ _id: dbUser._id }, {
@@ -138,9 +136,8 @@ exports.verifyUserEmail = async (req, res) => {
 
         message = 'Email verification successful';
         logger.info(`${message}. User email: ${dbUser.email}`);
-        return res.status(HTTP_STATUS.OK.CODE).json({
-            message
-        });
+
+        return res.status(HTTP_STATUS.OK.CODE).send(`<h2>${message}</h2>`);
     } catch (err) {
         logger.error(`Email Verification failed. ErrMSG: ${err.message}`);
         return res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR.CODE).json({
