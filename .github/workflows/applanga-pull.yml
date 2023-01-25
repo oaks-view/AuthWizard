@@ -1,0 +1,27 @@
+name: Pull Target Files from Applanga
+on: workflow_dispatch
+jobs:
+  pull-translation-in:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          ref: ${{ github.head_ref }}
+          path: checkout
+      - uses: applanga/setup-applanga-cli@v1.0.2
+        with:
+          version: 1.0.75
+      - name: Pull translations from Applanga
+        env:
+          APPLANGA_ACCESS_TOKEN: ${{ secrets.APPLANGA_ACCESS_TOKEN }}
+        run: applanga pull
+        working-directory: checkout
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v4.2.0
+        with:
+          branch: newTranslations
+          author: 'github-actions[bot] <41898282+github-actions[bot]@users.noreply.github.com>'
+          commit-message: Updated translations
+          title: Updated translations
+          body: Pulled in new translations from Applanga portal
+          path: checkout
